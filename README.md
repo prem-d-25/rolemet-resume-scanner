@@ -1,4 +1,5 @@
 IN EVN declate this :
+
     PORT=3001
     MONGO_URI=mongodb+srv:.....
     CLIENT_URL = Allowd client URL

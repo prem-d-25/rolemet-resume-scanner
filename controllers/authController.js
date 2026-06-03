@@ -1,10 +1,11 @@
 // server/controllers/authController.js
 import bcrypt from 'bcryptjs'
 import { User } from '../models/User.js'
+import { genrateAccessToken, genrateRefreshToken } from '../utils/generateToken.js'
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body
+    const { name, email, password, role} = req.body
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' })
@@ -27,6 +28,7 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role: role=="admin" ? role : 'user'  
     })
 
     res.status(201).json({
@@ -46,64 +48,80 @@ export const register = async (req, res) => {
 }
 
 
-// const generateToken = (id) => {
-//   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
-// };
+export const login = async (req, res)=>{
+  try {
+    const {email, password} = req.body;
+    if(!email || !password){
+      return res.status(400).json({message: 'email and password are require'})
+    }
+
+    const user = await User.findOne({email}).select('+password');
+    if(!user){
+      return res.status(401).json({message: `Invalid credentials`})
+    }
+
+    const isMatch = await bcrypt(password, user.password)
+    if(!isMatch){
+      return req.status(401).json({message: `Invalid credentials`})
+    }
+
+    const accessToken = genrateAccessToken(user._id, user.role)
+    const refreshToken = genrateRefreshToken(user._id)
+    
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, // Front js can not access this 
+      secure: process.env.NODE_ENV  == 'production', //HTTPS in only production
+      sameSite: 'strict', // for CSRF attack 
+      maxAge: 7*24*60*60*1000 // 7d in millisecond
+    })
+
+    return res.status(200).json({
+      accessToken,
+      user: {
+        id: user?._id,
+        name: user?.name,
+        email: user?.email,
+        role: user?.role
+      }
+    })
+
+  }
+  catch(error){
+    console.error(error)
+    return res.status(500).json({message: `Server Error ${error.message}`})
+  }
+}
 
 
+export const refreshAccessToken = async (req, res)=>{
+  try{
+    const token = req.cookie?.refreshToken
+    if(!token){
+      return res.status(401).json({message: 'No refresh token'}) 
+    }
 
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
 
-// exports.registerUser = async (req, res) => {
-//   try {
-//     const { name, email, password } = req.body;
+    const user = await User.findById(decoded.id)
+    if(!user){
+      res.status(401).json({message: 'User not found'})
+    }
 
-//     const userExists = await User.findOne({ email });
-//     if (userExists) {
-//       return res.status(400).json({ message: "User already registered with this email" });
-//     }
+    const accessToken = genrateAccessToken(user._id, user.role)
+    res.status(200).json({ accessToken })
 
-//     const user = await User.create({ name, email, password });
+  }
+  catch(error){
+    return res.status(403).json({message: 'Invalid or expired refresh token'})
+  }
+}
 
-//     if (user) {
+export const logout = async (req, res)=>{
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV == production,
+    sameSite: 'strict'
+  })
 
-//       generateTokenAndSetCookie(res, user._id)
-
-//       return res.status(201).json({
-//         _id: user._id,
-//         name: user.name,
-//         email: user.email
-//       });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: "Registration failed", error: error.message });
-//   }
-// };
-
-// exports.loginUser = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     const user = await User.findOne({ email });
-
-//     if (user && (await user.matchPassword(password))) {
-//       return res.json({
-//         _id: user._id,
-//         name: user.name,
-//         email: user.email,
-//         token: generateToken(user._id),
-//       });
-//     } else {
-//       return res.status(401).json({ message: "Invalid email or password" });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: "Login failed", error: error.message });
-//   }
-// };
-
-// exports.logoutUser = async (req, res) => {
-//   res.cookie("jwt", "", {
-//     httpOnly: true,
-//     expires: new Date(0), // Instantly expires the cookie
-//   });
-//   res.status(200).json({ message: "Logged out successfully" });
-// };
+  return res.status(200).json({message: 'Logged out successfully'})
+}

@@ -1,4 +1,4 @@
-IN EVN declate this :
+IN EVN declare this :
 
     PORT=3001
     MONGO_URI=mongodb+srv:.....

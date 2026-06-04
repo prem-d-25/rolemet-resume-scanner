@@ -2,6 +2,7 @@
 import bcrypt from 'bcryptjs'
 import { User } from '../models/User.js'
 import { genrateAccessToken, genrateRefreshToken } from '../utils/generateToken.js'
+import jwt from 'jsonwebtoken'
 
 export const register = async (req, res) => {
   try {
@@ -60,9 +61,9 @@ export const login = async (req, res)=>{
       return res.status(401).json({message: `Invalid credentials`})
     }
 
-    const isMatch = await bcrypt(password, user.password)
+    const isMatch = await bcrypt.compare(password, user.password)
     if(!isMatch){
-      return req.status(401).json({message: `Invalid credentials`})
+      return res.status(401).json({message: `Invalid credentials`})
     }
 
     const accessToken = genrateAccessToken(user._id, user.role)
@@ -112,6 +113,7 @@ export const refreshAccessToken = async (req, res)=>{
 
   }
   catch(error){
+    console.error(error)
     return res.status(403).json({message: 'Invalid or expired refresh token'})
   }
 }
@@ -119,7 +121,7 @@ export const refreshAccessToken = async (req, res)=>{
 export const logout = async (req, res)=>{
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV == production,
+    secure: process.env.NODE_ENV == "production",
     sameSite: 'strict'
   })
 

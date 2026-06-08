@@ -51,6 +51,8 @@ export const register = async (req, res) => {
 
 export const login = async (req, res)=>{
   try {
+
+    console.log("asdas")
     const {email, password} = req.body;
     if(!email || !password){
       return res.status(400).json({message: 'email and password are require'})
@@ -97,7 +99,9 @@ export const login = async (req, res)=>{
 export const refreshAccessToken = async (req, res)=>{
   try{
     const token = req.cookie?.refreshToken
+    console.log(req.cookie)
     if(!token){
+      console.log("asss")
       return res.status(401).json({message: 'No refresh token'}) 
     }
 

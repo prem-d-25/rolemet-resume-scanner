@@ -370,6 +370,7 @@ const AnalysisPage = () => {
                 </div>
               )}
 
+              {/* TAB 2: Curated 2-Column Responsive Job Cards */}
               {activeTab === "jobs" && (
                 <div className="space-y-4 max-w-5xl mx-auto pb-24 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between bg-[#141414] border border-white/[0.04] p-4 rounded-xl gap-4 flex-wrap">

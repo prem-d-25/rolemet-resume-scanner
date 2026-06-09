@@ -1,5 +1,6 @@
 import Loader from "@/components/common/Loader";
 import useAuthStore from "@/features/auth/authStore";
+import { ROUTES } from "@/constants/routes";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
@@ -11,7 +12,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!accessToken) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
   return children;

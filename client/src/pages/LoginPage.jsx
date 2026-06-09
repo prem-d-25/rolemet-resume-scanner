@@ -6,6 +6,7 @@ import { loginApi } from "@/api/auth.api";
 import useAuthStore from "@/features/auth/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CusButton } from "@/components/form/FormButton";
+import { ROUTES } from "@/constants/routes";
 
 function LoginPage() {
   const {
@@ -29,7 +30,7 @@ function LoginPage() {
         user: resData.user
       })
 
-      navigate("/dashboard")
+      navigate(ROUTES.HOME)
     }
     catch (error) {
       console.error(`LoginPage.jsx -> ${error}`)
@@ -124,10 +125,6 @@ function LoginPage() {
 
               <div className="pt-4">
                 <CusButton
-                  onClick={() => {
-                    // localStorage.setItem("token", true)
-                    // navigate(Route.Dashboard)
-                  }}
                   label="Enter Workspace"
                   type="submit"
                   className="w-full !py-4 !text-sm font-bold uppercase tracking-[0.1em] shadow-xl shadow-orange-500/10 hover:shadow-orange-500/20 transition-all"
@@ -145,7 +142,7 @@ function LoginPage() {
                 New to the platform?{" "}
                 <button
                   type="button"
-                  onClick={() => navigate(Route.Register)}
+                  onClick={() => navigate(ROUTES.REGISTER)}
                   className="font-semibold text-gray-900 hover:text-orange-600 transition-colors underline underline-offset-4 decoration-orange-200"
                 >
                   Sign Up

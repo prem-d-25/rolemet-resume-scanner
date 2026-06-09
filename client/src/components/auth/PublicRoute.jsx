@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (accessToken) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={ROUTES.HOME} replace />;
   }
 
 

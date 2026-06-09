@@ -1,12 +1,15 @@
+import Navbar from "@/components/common/Navbar";
 import { Outlet } from "react-router-dom";
 
 function PrivateLayout() {
   return (
     <>
-      <h2>Navbar</h2>
-      <h2>Sidebar</h2>      
-
-      <Outlet />
+      <div className="min-h-screen bg-[#ffffff]">
+        <Navbar />
+        <main  className="mx-auto">
+          <Outlet />
+        </main>
+      </div>
     </>
   );
 }

@@ -8,11 +8,14 @@ import PublicLayout from "@/layouts/PublicLayout";
 import PrivateLayout from "@/layouts/PrivateLayout";
 
 import { ROUTES } from "@/constants/routes";
-import ProtectedRoute from "@/components/auth/protectedRoute";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import PublicRoute from "@/components/auth/PublicRoute";
 import RegisterPage from "@/pages/RegisterPage";
+import useAuthStore from "@/features/auth/authStore";
 
 function AppRoutes() {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
   return (
     <Routes>
       <Route element={<PublicLayout />}>

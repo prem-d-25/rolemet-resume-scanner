@@ -8,11 +8,11 @@ const ProtectedRoute = ({ children }) => {
   const isInitializing = useAuthStore((state) => state.isInitializing);
 
   if (isInitializing) {
-    return <Loader/>
+    return <Loader />
   }
 
-  if (!accessToken) {
-    return <Navigate to="/login" replace />;
+  if (accessToken) {
+    return <Navigate to="/dashboard" replace />;
   }
 
 

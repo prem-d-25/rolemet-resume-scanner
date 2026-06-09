@@ -60,17 +60,19 @@ export const login = async (req, res)=>{
 
     const user = await User.findOne({email}).select('+password');
     if(!user){
-      return res.status(401).json({message: `Invalid credentials`})
+      return res.status(400).json({message: `Invalid credentials`})
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
     if(!isMatch){
-      return res.status(401).json({message: `Invalid credentials`})
+      return res.status(400).json({message: `Invalid credentials`})
     }
 
     const accessToken = genrateAccessToken(user._id, user.role)
     const refreshToken = genrateRefreshToken(user._id)
     
+    console.log(refreshToken)
+
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true, // Front js can not access this 
       secure: process.env.NODE_ENV  == 'production', //HTTPS in only production
@@ -98,8 +100,7 @@ export const login = async (req, res)=>{
 
 export const refreshAccessToken = async (req, res)=>{
   try{
-    const token = req.cookie?.refreshToken
-    console.log(req.cookie)
+    const token = req.cookies?.refreshToken
     if(!token){
       console.log("asss")
       return res.status(401).json({message: 'No refresh token'}) 

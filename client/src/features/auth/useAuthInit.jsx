@@ -24,7 +24,6 @@ const useAuthInit = ()=>{
             catch(error){
                 console.log("this")
                 logout()
-                navigate("/login")       
                 console.error("No active session", error)
             }
             finally{

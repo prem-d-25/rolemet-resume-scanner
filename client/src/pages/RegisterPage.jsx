@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerApi } from "@/api/auth.api";
 
 function RegisterPage() {
-const {
+  console.log("RegisterPage.jsx rendered")
+  const {
     register,
     handleSubmit,
     formState: { errors },
@@ -14,17 +15,17 @@ const {
     resolver: zodResolver(registerSchema),
   });
 
-  const navigate = useNavigate() 
+  const navigate = useNavigate()
 
   const onSubmit = async (data) => {
-    try{
+    try {
       await registerApi(data);
       navigate("/login")
-    } 
-    catch(error){
+    }
+    catch (error) {
       console.error(`RegisterPage.jsx -> ${error}`)
-    } 
-  
+    }
+
   };
 
 
@@ -35,7 +36,7 @@ const {
         register={register("name")}
         error={errors.name}
       />
-      
+
       <FormInput
         label="Email"
         register={register("email")}

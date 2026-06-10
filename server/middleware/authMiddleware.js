@@ -3,7 +3,6 @@ import { User } from '../models/User.js';
 
 export const protect = async (req, res, next) => {
   try {
-    console.log("yoo")
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith(`Bearer`)) {
@@ -15,18 +14,16 @@ export const protect = async (req, res, next) => {
 
     const user = await User.findById(decoded.id).select('-password')
     if(!user){
-      res.status(401).json({message: `User don't exist`})
+      return res.status(400).json({message: `User don't exist`})
     }
 
     req.user =  user
-
-    
     next()
 
   } catch (error) {
     if (error.name == "TokenExpiredError")
-      return res.status(505).json({ message: `Token Expired` });
-    return res.status(505).json({ message: `Invalid Token` });
+      return res.status(401).json({ message: `Token Expired` });
+    return res.status(401).json({ message: `Invalid Token` });
   }
 };
 

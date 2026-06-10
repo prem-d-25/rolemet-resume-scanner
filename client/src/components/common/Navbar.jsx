@@ -4,6 +4,7 @@ import useAuthStore from "@/features/auth/authStore";
 import { CusButton } from "@/components/form/FormButton";
 import { LogOut, User, Menu, X, Bookmark, ChartLine, LayoutDashboard } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
+import { logoutApi } from "@/api/auth.api";
 
 // 1. Static Configuration moved outside of component layout memory block
 const NAV_LINKS = [
@@ -20,9 +21,10 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, setAuth } = useAuthStore();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const resData = await logoutApi();
     setAuth({ accessToken: null, user: null });
-    navigate("/login");
+    navigate(ROUTES.LOGIN);
   };
 
   useEffect(() => {

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAuthStore from "@/features/auth/authStore";
 import { User, Terminal, Lock, Briefcase, Zap, Check, Edit2, X, Code2, Layers, MapPin } from "lucide-react";
+import { profileApi } from "@/api/user.api";
 
 const ProfilePage = () => {
     const { user, updateUser } = useAuthStore();
@@ -15,6 +16,24 @@ const ProfilePage = () => {
         profileImage: user?.profileImage || null // <-- Add this property block link
     });
 
+    useEffect(() => {
+        getUperProfile();
+    }, []);
+
+    const getUperProfile = async () => {
+        try {
+            const {user} = await profileApi();
+            setFormData({
+                ...user,
+                resumeTargetRoleTitle: user.resumeTargetRoleTitle,
+                primaryTechFocus: user.primaryTechFocus,
+                profileImage: user.profileImage || null
+            });
+        } catch (error) {
+            console.error(`ProfilePage.jsx -> ${error}`);
+        }
+    }
+
     const handleCancel = () => {
         setFormData({
             name: user?.name || "Prem Dave",
@@ -26,10 +45,6 @@ const ProfilePage = () => {
         });
         setIsEditing(false);
     };
-
-    // Fixed email parameter - non-editable security property
-    const accountEmail = user?.email || "premdave3705@gmail.com";
-    const remainingTokens = user?.remainingTokens ?? 8;
 
     // 2. Interaction Handlers
     const handleInputChange = (e) => {
@@ -188,7 +203,7 @@ const ProfilePage = () => {
 
                             <div className="flex items-center gap-1.5 bg-orange-500/5 border border-orange-500/15 px-3 py-1.5 rounded-lg shrink-0">
                                 <Zap className="w-3.5 h-3.5 text-orange-500 animate-pulse" />
-                                <span className="text-sm font-mono font-bold text-white">{remainingTokens}</span>
+                                <span className="text-sm font-mono font-bold text-white">{formData?.allocatedToken}</span>
                             </div>
                         </div>
                     </div>
@@ -228,7 +243,7 @@ const ProfilePage = () => {
                                 <label className="text-gray-600 font-mono text-[9px] tracking-wider uppercase flex items-center gap-1.5 mb-1.5">
                                     <Lock className="w-3 h-3 text-gray-700" /> Registered Email Address // Secured
                                 </label>
-                                <span className="text-xs text-gray-400 block font-mono tracking-wide py-0.5 normal-case">{accountEmail}</span>
+                                <span className="text-xs text-gray-400 block font-mono tracking-wide py-0.5 normal-case">{formData.email}</span>
                             </div>
 
                             {/* FIELD 3: TARGET RESUME JOB ROLE */}

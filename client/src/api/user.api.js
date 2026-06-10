@@ -1,8 +1,5 @@
-import axios from "axios";
+import api from "./axios";
 
-const api = axios.create({
-  baseURL: "",
-  withCredentials: true,
-});
-
-export default api;
+export const profileApi = () =>
+  api.get("/user/profile")
+     .then((res) => res.data);

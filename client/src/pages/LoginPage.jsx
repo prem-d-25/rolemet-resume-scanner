@@ -7,6 +7,7 @@ import useAuthStore from "@/features/auth/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CusButton } from "@/components/form/FormButton";
 import { ROUTES } from "@/constants/routes";
+import AuthLeftPage from "./AuthLeftPage";
 
 function LoginPage() {
   const {
@@ -42,46 +43,8 @@ function LoginPage() {
 
   return (
     <div className="h-screen flex font-sans antialiased">
-      <div className="hidden lg:flex bg-[#0f0f0f] w-[50%] items-center justify-center relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        ></div>
-        <div className="absolute w-[600px] h-[600px] bg-orange-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-
-        <div className="relative z-10 w-full max-w-md px-12">
-          <div className="mb-10 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-400 shadow-2xl shadow-orange-500/20">
-            <span className="text-white text-3xl font-bold italic">P</span>
-          </div>
-
-          <div className="space-y-4">
-            <h1 className="text-white text-5xl font-light tracking-tight leading-[1.1]">
-              The core of your <br />
-              <span className="font-semibold">daily operations.</span>
-            </h1>
-
-            <p className="text-gray-400 text-lg font-light max-w-sm">
-              Seamlessly track tasks, attendance, and team performance in one
-              unified workspace.
-            </p>
-          </div>
-
-          {/* Decorative minimalist progress line */}
-          <div className="mt-16 flex items-center gap-4">
-            <div className="h-[1px] w-12 bg-orange-500"></div>
-            <span className="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-medium">
-              Authenticated Session
-            </span>
-          </div>
-        </div>
-      </div>
+      <AuthLeftPage />
       <div className="w-full lg:w-[50%] flex items-center justify-center bg-[#ffffff] relative">
-        <div className="absolute top-0 right-0 p-8 text-[10px] font-mono text-gray-300 tracking-widest uppercase">
-          Access Portal // 01
-        </div>
 
         <div className="w-full max-w-sm px-6">
           <div className="mb-12">

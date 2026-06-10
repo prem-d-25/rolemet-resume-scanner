@@ -1,5 +1,6 @@
 import Loader from "@/components/common/Loader";
 import useAuthStore from "@/features/auth/authStore";
+import { ROUTES } from "@/constants/routes";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {

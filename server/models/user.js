@@ -5,8 +5,8 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"], // second value = custom error message
-      trim: true, // removes accidental spaces "  John  " → "John"
+      required: [true, "Name is required"],
+      trim: true,
       minlength: [2, "Name must be at least 2 characters"],
     },
 
@@ -55,6 +55,11 @@ const userSchema = new mongoose.Schema(
     },
 
     primaryTechFocus: {
+      type: String,
+      default: null,
+    },
+
+    profileImage: {
       type: String,
       default: null,
     },

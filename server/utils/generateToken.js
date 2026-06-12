@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+    import jwt from 'jsonwebtoken'
 
 // Access token - Short Live 
 export const genrateAccessToken = (userId, role)=>{

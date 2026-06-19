@@ -1,4 +1,7 @@
-import { experienceLevelOptions, workplaceModeOptions } from "@/pages/profile/ProfileExtra";
+import {
+  experienceLevelOptions,
+  workplaceModeOptions,
+} from "@/pages/profile/ProfileExtra";
 import { z } from "zod";
 
 export const profileSchema = z.object({
@@ -8,18 +11,20 @@ export const profileSchema = z.object({
   primaryTechFocus: z.string().min(2, "Tech focus is required").max(50),
   experienceLevel: z
     .string()
-    .refine(
-      (val) =>
-        experienceLevelOptions.includes(
-          val,
-        ),
-      { message: "Invalid experience level selected" },
-    ),
+    .refine((val) => experienceLevelOptions.includes(val), {
+      message: "Invalid experience level selected",
+    }),
   workplaceMode: z
     .string()
     .refine((val) => workplaceModeOptions.includes(val), {
       message: "Invalid workplace mode selected",
     }),
-
-  profileImage: z.string().nullable().optional(),
+  profileImage: z
+    .any()
+    .refine(
+      (val) => !val || typeof val === "string" || val instanceof File,
+      "Profile image must be a valid file or link reference",
+    )
+    .nullable()
+    .optional(),
 });

@@ -19,7 +19,8 @@ const Navbar = () => {
 
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const { user, setAuth } = useAuthStore();
+  const user = useAuthStore(state => state.user);
+  const setAuth = useAuthStore(state => state.setAuth);
 
   const handleLogout = async () => {
     const resData = await logoutApi();
@@ -138,15 +139,23 @@ const Navbar = () => {
             aria-expanded={showProfileMenu}
             aria-haspopup="true"
           >
-            <div className="w-9 h-9 rounded-full bg-white/[0.07] border border-white/10 flex items-center justify-center text-gray-300 group-hover:border-orange-500/50 transition-colors">
-              <User className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-full bg-white/[0.07] border border-white/10 flex items-center justify-center overflow-hidden group-hover:border-orange-500/50 transition-colors">
+              {user?.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-4 h-4 text-gray-300" />
+              )}
             </div>
             <div className="hidden lg:block">
               <p className="text-xs font-medium text-white tracking-wide">
                 {user?.name || "Prem Dave"}
               </p>
               <p className="text-[10px] text-gray-500 font-mono tracking-wider">
-                {user?.role || "Operator"}
+                {user?.resumeTargetRoleTitle || ""}
               </p>
             </div>
           </button>

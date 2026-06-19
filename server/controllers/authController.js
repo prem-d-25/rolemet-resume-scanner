@@ -102,19 +102,18 @@ export const refreshAccessToken = async (req, res)=>{
   try{
     const token = req.cookies?.refreshToken
     if(!token){
-      console.log("asss")
       return res.status(401).json({message: 'No refresh token'}) 
     }
 
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
 
-    const user = await User.findById(decoded.id)
+    const user = await User.findById(decoded.id).select("-password")
     if(!user){
       res.status(401).json({message: 'User not found'})
     }
 
     const accessToken = genrateAccessToken(user._id, user.role)
-    res.status(200).json({ accessToken })
+    res.status(200).json({ accessToken, user})
 
   }
   catch(error){

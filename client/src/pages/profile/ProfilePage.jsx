@@ -14,6 +14,7 @@ const ProfilePage = () => {
     const inisialUser = useRef(inisValues);
 
     const [isPanding, setIsPanding] = useState(true);
+    const [previewImage, setPreviewImage] = useState(null);
 
     const {
         register,
@@ -26,8 +27,6 @@ const ProfilePage = () => {
         resolver: zodResolver(profileSchema),
         defaultValues: inisValues,
     });
-
-    console.log(errors);    
 
     // Keep responsive structural changes dynamic via watch hooks
     const currentProfileImage = watch("profileImage");
@@ -57,24 +56,33 @@ const ProfilePage = () => {
 
     // Central submission logic execution console printer
     const handleFormSubmit = async (data) => {
-        console.log("Form submitted with data:", data);
         try {
-            if(isPanding) return;
+            if (isPanding) return;
             setIsPanding(true);
-            if (JSON.stringify(data) !== JSON.stringify(inisialUser.current)) {
-                let payload = {};
 
-                Object.keys(data).forEach((key) => {
-                    if (data[key] !== inisialUser.current[key]) {
-                        payload[key] = data[key];
-                    }
-                });
+            const formData = new FormData();
 
-                const result = await editProfileApi(payload);
+            let hasChanges = false;
+            Object.keys(data).forEach((key) => {
+                if (key === "profileImage") return;
+                if (data[key] !== inisialUser.current[key]) {
+                    formData.append(key, data[key]);
+                    hasChanges = true;
+                }
+            });
+
+            if (data.profileImage && typeof data.profileImage === "object") {
+                formData.append("profileImage", data.profileImage)
+                hasChanges = true
+            }
+            console.log(typeof data.profileImage, hasChanges)
+
+            if (hasChanges) {
+                const result = await editProfileApi(formData);
                 alert(result.message);
                 getUpperProfile();
                 setIsEditing(false);
-            }   
+            }
             else {
                 alert("No changes detected to update.");
             }
@@ -87,6 +95,10 @@ const ProfilePage = () => {
     };
 
     const handleCancel = () => {
+        if (previewImage) {
+            URL.revokeObjectURL(previewImage)
+        }
+        setPreviewImage(null)
         reset(inisialUser.current);
         setIsEditing(false);
     };
@@ -94,11 +106,13 @@ const ProfilePage = () => {
     const handleImageChange = (e) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setValue("profileImage", reader.result, { shouldValidate: true });
-            };
-            reader.readAsDataURL(file);
+            if (previewImage) {
+                URL.revokeObjectURL(previewImage)
+            }
+            setValue("profileImage", file, { shouldValidate: true });
+            const localBlobURl = URL.createObjectURL(file)
+            setPreviewImage(localBlobURl)
+
         }
     };
 
@@ -171,32 +185,24 @@ const ProfilePage = () => {
                         <div className="relative group/avatar mb-6">
                             <label
                                 htmlFor="avatar-upload"
-                                className={`w-24 h-24 bg-[#0f0f0f] border rounded-2xl flex items-center justify-center relative shadow-inner overflow-hidden select-none transition-all duration-300 ${isEditing
-                                    ? "cursor-pointer border-orange-500/40 hover:border-orange-500 bg-orange-500/[0.02]"
-                                    : "border-white/10"
+                                className={`w-24 h-24 bg-[#0f0f0f] border rounded-2xl flex items-center justify-center relative overflow-hidden select-none transition-all duration-300 ${isEditing ? "cursor-pointer border-orange-500/40 hover:border-orange-500" : "border-white/10"
                                     }`}
                             >
-                                {currentProfileImage ? (
-                                    <img
-                                        src={currentProfileImage}
-                                        alt={currentName}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover/avatar:scale-105"
-                                    />
+                                {/* Clean rendering lookup condition */}
+                                {previewImage ? (
+                                    <img src={previewImage} alt="Local Upload Preview" className="w-full h-full object-cover" />
+                                ) : typeof currentProfileImage === "string" && currentProfileImage ? (
+                                    <img src={currentProfileImage} alt={currentName} className="w-full h-full object-cover" />
                                 ) : (
-                                    <User className="w-8 h-8 text-gray-500 group-hover/avatar:text-orange-400 transition-colors" />
+                                    <User className="w-8 h-8 text-gray-500" />
                                 )}
 
                                 {isEditing && (
-                                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1">
-                                        <Terminal className="w-3.5 h-3.5 text-orange-500 animate-pulse" />
-                                        <span className="text-[8px] font-mono tracking-wider text-white font-bold uppercase">
-                                            UPDATE_IMG
-                                        </span>
+                                    <div className="absolute inset-0 bg-black/70 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1">
+                                        <Terminal className="w-3.5 h-3.5 text-orange-500" />
+                                        <span className="text-[8px] font-mono tracking-wider text-white font-bold uppercase">UPDATE_IMG</span>
                                     </div>
                                 )}
-
-                                <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-orange-500" />
-                                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-orange-500" />
                             </label>
 
                             <input

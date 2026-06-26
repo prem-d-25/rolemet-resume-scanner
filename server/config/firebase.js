@@ -1,11 +1,16 @@
-import admin from "firebase-admin";
+import { initializeApp, cert } from "firebase-admin/app";
+import { getStorage } from "firebase-admin/storage";
+
+import dotenv from "dotenv";
+
+dotenv.config()
 
 const privateKey = process.env.FIREBASE_PRIVATE_KEY
   ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
   : undefined;
 
-admin.initializeApp({
-  credential: admin.credential.cert({
+const app = initializeApp({
+  credential: cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     privateKey: privateKey,
@@ -13,6 +18,4 @@ admin.initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET
 });
 
-const bucket = admin.storage().bucket();
-
-export default {bucket}
+export const bucket = getStorage(app).bucket()

@@ -8,6 +8,7 @@ import cors from 'cors'
 import authRoutes from './routes/authRoutes.js'
 import profileRoutes from './routes/userRoutes.js'
 import { connectDB } from './config/db.js'
+import chatWithBot from './routes/chatWithBotRoutes.js'
 
 
 const app = express()
@@ -26,6 +27,7 @@ app.use(cookieParser())           // parsee cookies from request headers
 // --- Routes ---
 app.use('/api/auth', authRoutes)
 app.use('/api/user', profileRoutes)
+app.use('/api/chat', chatWithBot)
 
 // --- Start ---
 const PORT = process.env.PORT || 5000

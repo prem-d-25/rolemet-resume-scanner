@@ -8,7 +8,7 @@ const upload =  multer({
     fileSize: 5*1024*1024
   },
   fileFilter: (req, file, cb)=>{
-    if(file.mimetype.startsWith('image/')){
+    if(file.mimetype.startsWith('image/') || file.mimetype === "application/pdf"){
       cb(null, true)
     }else{
       cb(new Error(`Only system formet matching image are supported.`), false)

@@ -26,6 +26,7 @@ function LoginPage() {
   const onSubmit = async (data) => {
     try {
       const resData = await loginApi(data);
+      console.log(resData)
       setAuth({
         accessToken: resData.accessToken,
         user: resData.user
